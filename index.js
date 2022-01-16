@@ -53,6 +53,7 @@ async function run() {
         // POST API APARTMENT
         app.post('/apartmentList', async (req, res) => {
             const apartment = req.body;
+            apartment.status = 'Available';
 
             console.log("Hitting the post", apartment)
             const result = await apartmentCollection.insertOne(apartment);
@@ -73,7 +74,20 @@ async function run() {
 
             res.json(result);
         })
-
+        //Update ApartmentList
+        app.put("/updateApartment/:id", (req, res) => {
+            const id = req.params.id;
+            // const updatedStatus = req.body;
+            const filter = { _id: objectId(id) };
+            //console.log(updatedStatus);
+            apartmentCollection
+                .updateOne(filter, {
+                    $set: { status: "SoldOut" },
+                })
+                .then((result) => {
+                    res.json(result);
+                });
+        });
 
 
         //PURCHASES
@@ -169,7 +183,7 @@ async function run() {
             res.send(review)
         })
 
-         app.post("/addUserInfo", async (req, res) => {
+        app.post("/addUserInfo", async (req, res) => {
             const user = req.body;
             const result = await usersCollection.insertOne(user);
             console.log(result);
